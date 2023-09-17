@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { useNavigate } from "react-router-dom";
 import Contacts from "./Contacts";
-const Problem2 = () => {
+const Problem2All = () => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [data, setData] = useState(null);
@@ -13,11 +13,36 @@ const Problem2 = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const handleModalA = async () => {
-    navigate("/problem-2/all");
+    const apiURL = "https://contact.mediusware.com/api/contacts/?page=1";
+    const res = await fetch(`${apiURL}`, {
+      method: "GET",
+    });
+    const contacts = await res.json();
+    setData({
+      type: "modalA",
+      dataList: contacts,
+    });
+    handleShow();
   };
   const handleModalB = async () => {
-    navigate("/problem-2/us");
+    const apiURL =
+      "https://contact.mediusware.com/api/country-contacts/United%20States/?page=1";
+    const res = await fetch(`${apiURL}`, {
+      method: "GET",
+    });
+    const contacts = await res.json();
+    setData({
+      type: "modalB",
+      dataList: contacts,
+    });
+    handleShow();
   };
+
+  useEffect(() => {
+    (async () => {
+      await handleModalA();
+    })();
+  }, []);
   return (
     <>
       <div className="container">
@@ -26,14 +51,20 @@ const Problem2 = () => {
 
           <div className="d-flex justify-content-center gap-3">
             <button
-              onClick={handleModalA}
+              onClick={() => {
+                navigate("/problem-2/all");
+                handleModalA();
+              }}
               className="btn btn-lg btn-outline-danger"
               type="button"
             >
               All Contacts
             </button>
             <button
-              onClick={handleModalB}
+              onClick={() => {
+                navigate("/problem-2/us");
+                handleModalB();
+              }}
               className="btn btn-lg btn-outline-warning"
               type="button"
             >
@@ -45,12 +76,26 @@ const Problem2 = () => {
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header>
-          <Button onClick={handleModalB} variant="primary">
+          <button
+            onClick={() => {
+              navigate("/problem-2/us");
+              handleModalB();
+            }}
+            className="btn btn-lg btn-outline-warning"
+            type="button"
+          >
             US Contacts
-          </Button>
-          <Button onClick={handleModalA} variant="danger">
+          </button>
+          <button
+            onClick={() => {
+              navigate("/problem-2/all");
+              handleModalA();
+            }}
+            className="btn btn-lg btn-outline-danger"
+            type="button"
+          >
             All Contacts
-          </Button>
+          </button>
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
@@ -75,4 +120,4 @@ const Problem2 = () => {
   );
 };
 
-export default Problem2;
+export default Problem2All;
